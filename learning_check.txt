@@ -1,0 +1,30 @@
+UNTRAINED AGENT
+All action values start at zero.
+
+Evaluation: 34/100 deliveries
+Average steps per delivery: 28.1
+
+TRAINING
+Episode  1000: 543/1000 deliveries during training
+Episode  2000: 855/1000 deliveries during training
+Episode  3000: 981/1000 deliveries during training
+Episode  4000: 998/1000 deliveries during training
+Episode  5000: 1000/1000 deliveries during training
+Episode  6000: 1000/1000 deliveries during training
+Episode  7000: 1000/1000 deliveries during training
+Episode  8000: 1000/1000 deliveries during training
+Episode  9000: 1000/1000 deliveries during training
+Episode 10000: 1000/1000 deliveries during training
+
+TRAINED AGENT
+
+Evaluation: 100/100 deliveries
+Average steps per delivery: 6.0
+
+One attempt using learned values:
+right    -> Moved to square 1.
+right    -> Moved to square 2.
+collect  -> Collected the coin.
+left     -> Moved to square 1.
+left     -> Moved to square 0.
+return   -> Delivered the coin. Task complete!
