@@ -4,6 +4,7 @@ import random
 from world import World
 import json
 from pathlib import Path
+from learning import choose_action, update_q_value
 
 ACTIONS = ("left", "right", "collect", "return")
 TRAINING_EPISODES = 10_000
@@ -19,22 +20,6 @@ def observe(world):
     )
 
 
-def choose_action(q_table, state, rng, exploration):
-    values = q_table.setdefault(state, [0.0] * len(ACTIONS))
-
-    # During training, sometimes try an exploratory action.
-    if rng.random() < exploration:
-        return rng.randrange(len(ACTIONS))
-
-    # Otherwise choose a learned best action.
-    # Resolve equal values randomly, without favoring a direction.
-    best_value = max(values)
-    best_actions = [
-        i for i, value in enumerate(values)
-        if value == best_value
-    ]
-    return rng.choice(best_actions)
-
 
 def train(seed=42):
     rng = random.Random(seed)
@@ -49,7 +34,7 @@ def train(seed=42):
         for _ in range(MAX_STEPS):
             state = observe(world)
             action = choose_action(
-                q_table, state, rng, exploration
+                    q_table, state, rng, exploration, ACTIONS
             )
             world.step(ACTIONS[action])
 
@@ -65,10 +50,14 @@ def train(seed=42):
                 future_value = max(next_values)
 
             # Update only the value of the action just tried.
-            old_value = q_table[state][action]
-            target = reward + 0.95 * future_value
-            q_table[state][action] += 0.2 * (
-                target - old_value
+            update_q_value(
+                q_table=q_table,
+                state=state,
+                action=action,
+                reward=reward,
+                next_state=next_state,
+                done=world.done,
+                actions=ACTIONS,
             )
 
             if world.done:
@@ -99,7 +88,7 @@ def evaluate(q_table):
 
         for step in range(1, MAX_STEPS + 1):
             action = choose_action(
-                q_table, observe(world), rng, 0.0
+                    q_table, observe(world), rng, 0.0, ACTIONS
             )
             world.step(ACTIONS[action])
 
@@ -121,7 +110,7 @@ def demonstrate(q_table):
 
     for _ in range(MAX_STEPS):
         action = choose_action(
-            q_table, observe(world), rng, 0.0
+                q_table, observe(world), rng, 0.0, ACTIONS
         )
         name = ACTIONS[action]
         print(f"{name:8} -> {world.step(name)}")
